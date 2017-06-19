@@ -1,13 +1,17 @@
 disc_d=20; // internal disc diameter
 disc_t=0.25; // disc thickness
 ball_d=10; // ball diameter
+pin_d=2; // transmission pin diameter
+pin_h=5; // pin length
 
-clearance=0.5; // lower=thight, higher=loose
+clearance=0.2; // lower=thight, higher=loose
 
-cavity_t=0.5; // cavity thickness
+cavity_t=0.5; // cavity shell thickness
 
 // nutating angle amplitude
 nutating_amplitude=15; // degrees
+
+opening_d=sin(nutating_amplitude)*(ball_d+2*clearance+cavity_t)+pin_d+2*clearance;
 
 // the planar circle touching disc edge
 touching_d=disc_d*cos(nutating_amplitude);
@@ -28,67 +32,50 @@ union()
     cube([disc_d,disc_t,disc_t+0.001],center=true);
   }
   sphere(d=ball_d,$fn=50,center=true);
+  cylinder(d=pin_d,h=ball_d/2+pin_h,$fn=50);
 }
 }
 
 module cavity()
 {
-  union()
+  intersection()
   {
     // barrel shaped cavity
   difference()
   {
     union()
     {
-      // big outer sphere
-      sphere(d=cavity_d+2*cavity_t+2*clearance,$fn=50,center=true);
-    }
-    union()
-    {
-      // cut big interior sphere
-      sphere(d=cavity_d+2*clearance,$fn=50,center=true);
-      // cut plane above
-      translate([0,0,cavity_d/2+touching_h+clearance])
-        cube([cavity_d*2,cavity_d*2,cavity_d],center=true);
-      // cut plane below
-      translate([0,0,-cavity_d/2-touching_h-clearance])
-        cube([cavity_d*2,cavity_d*2,cavity_d],center=true);
-
-    }
-
-  }
-
-
-  // upper discs with inner ball cut
-  difference()
-  {
-    union()
-    {
-    // upper touching disc plate
-    translate([0,0,touching_h+clearance])
-      cylinder(d=touching_d+2*cavity_t,h=cavity_t,  center=true);
-    // lower touching disc
-    translate([0,0,-touching_h-clearance])
-      cylinder(d=touching_d+2*cavity_t,h=cavity_t,  center=true);
-    // shell fot the ball inside
-    difference()
-    {
-      // inner ball shell
-      sphere(d=ball_d+2*cavity_t+2*clearance,$fn=50,center=true);
-      union()
+      // big outer sphere, drill top opening
+      difference()
       {
-        // cut planar cavity inside
-        cube([cavity_d,cavity_d,2*touching_h+2*clearance],center=true);
+        sphere(d=cavity_d+2*cavity_t+2*clearance,$fn=50,center=true);
+        // opening for the transmission pin
+        cylinder(d=opening_d,h=cavity_d,$fn=50);
       }
     }
-    }
-    // cut internal sphere
     union()
     {
+      // cut big interior sphere limited by planes
+      intersection()
+      {
+        // cut big sphere
+        sphere(d=cavity_d+2*clearance,$fn=50,center=true);
+        // cut nutation space
+        cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance],center=true);
+      }
+      // cut small inner sphere
       sphere(d=ball_d+2*clearance,$fn=50,center=true);
+
     }
-  }     
-  }    
+  }
+    union()
+    {
+      // intersection: reduce outside extra material
+      cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance+2*cavity_t],center=true);
+      // reduce material for inner sphere
+      sphere(d=ball_d+2*cavity_t+2*clearance,$fn=50,center=true);
+    }
+  }
 }
 
 
