@@ -92,12 +92,12 @@ yr=sin(360*$t);
     difference()
     {
       cavity();
-      translate([50,0,0])
+      translate([50,50,0])
         cube([100,100,100],center=true);
     }
 
   if(1)
-  color([1.0,0.2,1.0],alpha=0.2)
+  color([1.0,0.2,1.0],alpha=0.60)
     rotate([nutating_amplitude*xr,nutating_amplitude*yr,0])
       nutating_disc();
 }
