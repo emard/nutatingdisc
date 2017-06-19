@@ -2,10 +2,12 @@ disc_d=20; // internal disc diameter
 disc_t=0.25; // disc thickness
 ball_d=10; // ball diameter
 
+clearance=0.5; // lower=thight, higher=loose
+
 cavity_t=0.5; // cavity thickness
 
 // nutating angle amplitude
-nutating_amplitude=20; // degrees
+nutating_amplitude=15; // degrees
 
 // the planar circle touching disc edge
 touching_d=disc_d*cos(nutating_amplitude);
@@ -38,34 +40,24 @@ module cavity()
   {
     union()
     {
-      // outer sphere
-      sphere(d=cavity_d+2*cavity_t,$fn=50,center=true);
+      // big outer sphere
+      sphere(d=cavity_d+2*cavity_t+2*clearance,$fn=50,center=true);
     }
     union()
     {
-      // cut interior
-      sphere(d=cavity_d,$fn=50,center=true);
+      // cut big interior sphere
+      sphere(d=cavity_d+2*clearance,$fn=50,center=true);
       // cut plane above
-      translate([0,0,cavity_d/2+touching_h])
-        cube([cavity_d,cavity_d,cavity_d],center=true);
+      translate([0,0,cavity_d/2+touching_h+clearance])
+        cube([cavity_d*2,cavity_d*2,cavity_d],center=true);
       // cut plane below
-      translate([0,0,-cavity_d/2-touching_h])
-        cube([cavity_d,cavity_d,cavity_d],center=true);
+      translate([0,0,-cavity_d/2-touching_h-clearance])
+        cube([cavity_d*2,cavity_d*2,cavity_d],center=true);
 
     }
 
   }
 
-  difference()
-  {
-    // inner ball shell
-    sphere(d=ball_d+2*cavity_t,$fn=50,center=true);
-    union()
-    {
-      // cut cavity inside
-        cube([cavity_d,cavity_d,2*touching_h],center=true);
-    }
-  }
 
   // upper discs with inner ball cut
   difference()
@@ -73,15 +65,27 @@ module cavity()
     union()
     {
     // upper touching disc plate
-    translate([0,0,touching_h])
+    translate([0,0,touching_h+clearance])
       cylinder(d=touching_d+2*cavity_t,h=cavity_t,  center=true);
     // lower touching disc
-    translate([0,0,-touching_h])
+    translate([0,0,-touching_h-clearance])
       cylinder(d=touching_d+2*cavity_t,h=cavity_t,  center=true);
+    // shell fot the ball inside
+    difference()
+    {
+      // inner ball shell
+      sphere(d=ball_d+2*cavity_t+2*clearance,$fn=50,center=true);
+      union()
+      {
+        // cut planar cavity inside
+        cube([cavity_d,cavity_d,2*touching_h+2*clearance],center=true);
+      }
     }
+    }
+    // cut internal sphere
     union()
     {
-      sphere(d=ball_d,$fn=50,center=true);
+      sphere(d=ball_d+2*clearance,$fn=50,center=true);
     }
   }     
   }    
@@ -105,7 +109,7 @@ yr=sin(360*$t);
         cube([100,100,100],center=true);
     }
 
-  if(0)
+  if(1)
   color([1.0,0.2,1.0],alpha=0.2)
     rotate([nutating_amplitude*xr,nutating_amplitude*yr,0])
       nutating_disc();
