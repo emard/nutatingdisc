@@ -5,6 +5,10 @@ ball_d=disc_d/2; // mm internal ball diameter
 pin_d=2; // mm transmission pin diameter
 pin_h=5; // mm pin length
 
+iolet_h=5;
+iolet_w=5;
+iolet_angle=15;
+
 clearance=0.2; // mm smaller=thight, larger=loose
 
 cavity_t=1.0; // mm cavity shell thickness
@@ -47,12 +51,19 @@ module cavity()
     {
       union()
       {
-        // big outer sphere, drill top opening
+        // big outer sphere, drill top opening and inlet/outlet
         difference()
         {
           sphere(d=cavity_d+2*cavity_t+2*clearance,$fn=50,center=true);
           // opening for the transmission pin
           cylinder(d=opening_d,h=cavity_d,$fn=50);
+          // square holes for inlet/outlet
+            rotate([0,0,-iolet_angle])
+              translate([cavity_d/2+cavity_t/2,0,0])
+              cube([cavity_t*2,iolet_w,iolet_h],center=true);
+            rotate([0,0,iolet_angle])
+              translate([cavity_d/2+cavity_t/2,0,0])
+              cube([cavity_t*2,iolet_w,iolet_h],center=true);
         }
       }
       union()
@@ -118,7 +129,7 @@ yr=sin(360*$t);
     difference()
     {
       cavity();
-      translate([50,0,50])
+      translate([50,50,50])
         cube([100,100,100],center=true);
     }
 
