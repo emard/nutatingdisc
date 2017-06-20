@@ -1,13 +1,13 @@
-disc_d=20; // mm internal disc diameter
-disc_t=0.25; // mm disc thickness
+disc_d=25; // mm nutating disc diameter
+disc_t=1.0; // mm disc thickness
 divider_wall_t=1.0; // mm the cavity divider wall thickness
-ball_d=10; // mm ball diameter
+ball_d=disc_d/2; // mm internal ball diameter
 pin_d=2; // mm transmission pin diameter
 pin_h=5; // mm pin length
 
-clearance=0.2; // mm lower=thight, higher=loose
+clearance=0.2; // mm smaller=thight, larger=loose
 
-cavity_t=0.5; // mm cavity shell thickness
+cavity_t=1.0; // mm cavity shell thickness
 
 // nutating angle amplitude
 nutating_amplitude=15; // degrees
@@ -17,8 +17,8 @@ opening_d=sin(nutating_amplitude)*(ball_d+2*clearance+cavity_t)+pin_d+2*clearanc
 // the planar circle touching disc edge
 touching_d=disc_d*cos(nutating_amplitude);
 touching_h=disc_d/2*sin(nutating_amplitude);
-touching_t=0.25; // mm thickness of touching disck
 
+// diameter of internal cavity
 cavity_d=2*sqrt((touching_d/2)*(touching_d/2)+touching_h*touching_h);
 
 module nutating_disc()
