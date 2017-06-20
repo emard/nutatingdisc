@@ -17,6 +17,7 @@ opening_d=sin(nutating_amplitude)*(ball_d+2*clearance+cavity_t)+pin_d+2*clearanc
 // the planar circle touching disc edge
 touching_d=disc_d*cos(nutating_amplitude);
 touching_h=disc_d/2*sin(nutating_amplitude);
+ball_h=ball_d/2*sin(nutating_amplitude); // height of disc near the inner ball
 
 // diameter of internal cavity
 cavity_d=2*sqrt((touching_d/2)*(touching_d/2)+touching_h*touching_h);
@@ -56,15 +57,29 @@ module cavity()
       }
       union()
       {
-        // cut big interior sphere limited by planes, except the divider wall
+        // cut big interior sphere limited by planes->(todo conuses), except the divider wall
         difference()
         {
         intersection()
         {
           // cut big sphere
           sphere(d=cavity_d+2*clearance,$fn=50,center=true);
-          // cut nutation cavity space
-          cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance],center=true);
+          // cut conical nutation cavity space
+          difference()
+          {
+            cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance],center=true);
+            union()
+            {
+              // upper cone
+              translate([0,0,touching_h/2+disc_t/4])
+                cylinder(d1=0,d2=cavity_d,
+            h=touching_h+disc_t/2,$fn=50,center=true);
+              // lower cone
+              translate([0,0,-touching_h/2-disc_t/4])
+                cylinder(d2=0,d1=cavity_d,
+            h=touching_h+disc_t/2,$fn=50,center=true);
+            }
+          }
         }
           // leave divider wall uncut
           translate([cavity_d/2,0,0])

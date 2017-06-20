@@ -5,5 +5,4 @@ A model of nutating disc engine in openscad.
 
 # Todo
 
-[ ] conical cavity like
-    https://www.youtube.com/watch?v=VpSXJkPBbQ4
+[x] conical cavity like
