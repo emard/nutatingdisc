@@ -30,7 +30,7 @@ module nutating_disc()
       cylinder(d=disc_d,h=disc_t,,$fn=50,center=true);
       // the slit
       translate([disc_d/2,0,0])
-      cube([disc_d,divider_wall_t+clearance+0.001,divider_wall_t+clearance+0.001],center=true);
+      cube([disc_d,divider_wall_t+2*clearance,divider_wall_t+2*clearance],center=true);
     }
     sphere(d=ball_d,$fn=50,center=true);
     cylinder(d=pin_d,h=ball_d/2+pin_h,$fn=50);
@@ -56,13 +56,23 @@ module cavity()
       }
       union()
       {
-        // cut big interior sphere limited by planes
+        // cut big interior sphere limited by planes, except the divider wall
+        difference()
+        {
         intersection()
         {
           // cut big sphere
           sphere(d=cavity_d+2*clearance,$fn=50,center=true);
-          // cut nutation space
+          // cut nutation cavity space
           cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance],center=true);
+        }
+          // leave divider wall uncut
+          translate([cavity_d/2,0,0])
+            cube([
+              cavity_d,
+              divider_wall_t+0.001,
+              touching_h*2+0.001],
+              center=true);
         }
         // cut small inner sphere
         sphere(d=ball_d+2*clearance,$fn=50,center=true);
@@ -93,7 +103,7 @@ yr=sin(360*$t);
     difference()
     {
       cavity();
-      translate([50,50,0])
+      translate([50,0,50])
         cube([100,100,100],center=true);
     }
 
