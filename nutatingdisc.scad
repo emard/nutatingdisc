@@ -22,18 +22,18 @@ cavity_d=2*sqrt((touching_d/2)*(touching_d/2)+touching_h*touching_h);
 
 module nutating_disc()
 {
-union()
-{
-  difference()
+  union()
   {
-    cylinder(d=disc_d,h=disc_t,,$fn=50,center=true);
-    // the slit
-    translate([disc_d/2,0,0])
-    cube([disc_d,disc_t,disc_t+0.001],center=true);
+    difference()
+    {
+      cylinder(d=disc_d,h=disc_t,,$fn=50,center=true);
+      // the slit
+      translate([disc_d/2,0,0])
+      cube([disc_d,disc_t,disc_t+0.001],center=true);
+    }
+    sphere(d=ball_d,$fn=50,center=true);
+    cylinder(d=pin_d,h=ball_d/2+pin_h,$fn=50);
   }
-  sphere(d=ball_d,$fn=50,center=true);
-  cylinder(d=pin_d,h=ball_d/2+pin_h,$fn=50);
-}
 }
 
 module cavity()
@@ -41,33 +41,33 @@ module cavity()
   intersection()
   {
     // barrel shaped cavity
-  difference()
-  {
-    union()
+    difference()
     {
-      // big outer sphere, drill top opening
-      difference()
+      union()
       {
-        sphere(d=cavity_d+2*cavity_t+2*clearance,$fn=50,center=true);
-        // opening for the transmission pin
-        cylinder(d=opening_d,h=cavity_d,$fn=50);
+        // big outer sphere, drill top opening
+        difference()
+        {
+          sphere(d=cavity_d+2*cavity_t+2*clearance,$fn=50,center=true);
+          // opening for the transmission pin
+          cylinder(d=opening_d,h=cavity_d,$fn=50);
+        }
       }
-    }
-    union()
-    {
-      // cut big interior sphere limited by planes
-      intersection()
+      union()
       {
-        // cut big sphere
-        sphere(d=cavity_d+2*clearance,$fn=50,center=true);
-        // cut nutation space
-        cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance],center=true);
-      }
-      // cut small inner sphere
-      sphere(d=ball_d+2*clearance,$fn=50,center=true);
+        // cut big interior sphere limited by planes
+        intersection()
+        {
+          // cut big sphere
+          sphere(d=cavity_d+2*clearance,$fn=50,center=true);
+          // cut nutation space
+          cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance],center=true);
+        }
+        // cut small inner sphere
+        sphere(d=ball_d+2*clearance,$fn=50,center=true);
 
+      }
     }
-  }
     union()
     {
       // intersection: reduce outside extra material
