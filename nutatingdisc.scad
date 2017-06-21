@@ -68,7 +68,7 @@ module cavity()
       }
       union()
       {
-        // cut big interior sphere limited by planes->(todo conuses), except the divider wall
+        // cut big interior sphere limited by conuses, except the divider wall
         difference()
         {
         intersection()
@@ -97,7 +97,7 @@ module cavity()
             cube([
               cavity_d,
               divider_wall_t+0.001,
-              touching_h*2+0.001],
+              touching_h*2+clearance*2+0.001],
               center=true);
         }
         // cut small inner sphere
@@ -108,7 +108,15 @@ module cavity()
     union()
     {
       // intersection: reduce outside extra material
+      if(0)
       cube([cavity_d*2,cavity_d*2,2*touching_h+2*clearance+2*cavity_t],center=true);
+      // intersection reduce outside
+      // extra material, easier printing
+      // leave extra material down
+      extra_down=ball_d/4;
+      if(1)
+      translate([0,0,-extra_down/2])
+      cube([cavity_d*2,cavity_d*2,ball_d*0+2*touching_h+2*clearance+2*cavity_t+extra_down],center=true);
       // reduce material for inner sphere
       sphere(d=ball_d+2*cavity_t+2*clearance,$fn=50,center=true);
     }
@@ -120,10 +128,9 @@ module cavity()
 xr=cos(360*$t);
 yr=sin(360*$t);
 
-// upper touching disc
-// union()
+// for nutation animation
+if(1)
 {
-
   if(1)
   color([0.2,1.0,1.0],alpha=0.2)
     difference()
@@ -132,9 +139,26 @@ yr=sin(360*$t);
       translate([50,50,50])
         cube([100,100,100],center=true);
     }
-
   if(1)
   color([1.0,0.2,1.0],alpha=0.60)
     rotate([nutating_amplitude*xr,nutating_amplitude*yr,0])
       nutating_disc();
+}
+
+
+// attempt for printing
+// nutating disc is not FDM printable
+// its layers will fall
+if(0)
+{
+    difference()
+    {
+      union()
+      {
+        cavity();
+        nutating_disc();
+      }
+      translate([0,0,-ball_d+clearance+cavity_t])
+        cube([2*cavity_d,2*cavity_d,ball_d],center=true);
+    }
 }
